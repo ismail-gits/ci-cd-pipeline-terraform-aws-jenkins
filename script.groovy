@@ -41,17 +41,32 @@ def pushImage() {
     sh "docker push $IMAGE_NAME:latest"
 }
 
+def provisionServer() {
+    echo "provisioning ec2 server..."
+    dir("terraform") {
+        sh "terraform init"
+        sh "terraform apply --auto-approve"
+        SERVER_PUBLIC_IP = sh(
+            script: "terraform output ec2_public_ip"
+            returnStdout: true
+        ).trim()
+    }
+}
+
 def deploy() {
-    echo "deploying docker image to AWS EKS..."
+    echo "waiting for EC2 server to initialize..."
+    sleep(time: 90, unit: "SECONDS")
+
+    echo "deploying docker image to AWS EC2 server..."
+    echo "server_public_ip: $SERVER_PUBLIC_IP"
     
-    withCredentials([aws(
-        accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-        credentialsId: 'aws-credentials',
-        secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
-    )]) {
-        sh "aws eks update-kubeconfig --name eks-cluster-1"
-        sh "envsubst < kubernetes/deployment.yaml | kubectl apply -f -"
-        sh "envsubst < kubernetes/service.yaml | kubectl apply -f -"
+    def shellCmd = "bash ./server-commands.sh '$IMAGE_NAME:$IMAGE_VERSION'"
+    def ec2Instance = "ec2-user@$SERVER_PUBLIC_IP"
+
+    sshagent['myapp-server-ssh-key'] {
+        ssh "scp -o StrictHostKeyChecking=no docker-compose.yaml $ec2Instance:/home/ec2-user"
+        ssh "scp -o StrictHostKeyChecking=no server-commands.sh $ec2Instance:/home/ec2-user"
+        ssh "ssh -o StrictHostKeyChecking=no $ec2Instance $shellCmd"
     }
 }
 
@@ -69,7 +84,7 @@ def versionBump() {
         usernameVariable: 'USER',
         passwordVariable: 'PASSWORD'
     )]) {
-        sh "git remote set-url origin https://$USER:$PASSWORD@gitlab.com/ismailGitlab/ci-cd-pipeline-with-jenkins-eks-dockerhub.git"
+        sh "git remote set-url origin https://$USER:$PASSWORD@gitlab.com/ismailGitlab/ci-cd-pipeline-terraform-aws-jenkins.git"
     }
 
     sh "git add ."
