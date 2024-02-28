@@ -10,7 +10,7 @@ variable availability_zone {
 variable region {
     default = "us-east-2"
 }
-variable image_name = {
+variable image_name {
     default = "al2023-ami-*-x86_64"
 }
 
