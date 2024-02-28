@@ -98,8 +98,7 @@ pipeline {
                 }
             }
             environment {
-                APP_NAME = "java-maven-app"
-                AWS_DEFAULT_REGION = 'us-east-2'
+                DOCKER_CREDS = credentials('docker-credentials')
             }
             steps {
                 script {

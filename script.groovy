@@ -60,7 +60,7 @@ def deploy() {
     echo "deploying docker image to AWS EC2 server..."
     echo "server_public_ip: $SERVER_PUBLIC_IP"
     
-    def shellCmd = "bash ./server-commands.sh '$IMAGE_NAME:$IMAGE_VERSION'"
+    def shellCmd = "bash ./server-commands.sh $IMAGE_NAME:$IMAGE_VERSION $DOCKER_CREDS_USR $DOCKER_CREDS_PSW"
     def ec2Instance = "ec2-user@$SERVER_PUBLIC_IP"
 
     sshagent['myapp-server-ssh-key'] {
