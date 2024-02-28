@@ -46,7 +46,7 @@ def provisionServer() {
     dir("terraform") {
         sh "terraform init"
         sh "terraform apply --auto-approve"
-        SERVER_PUBLIC_IP = sh(
+        env.SERVER_PUBLIC_IP = sh(
             script: "terraform output ec2_public_ip",
             returnStdout: true
         ).trim()
@@ -64,9 +64,9 @@ def deploy() {
     def ec2Instance = "ec2-user@$SERVER_PUBLIC_IP"
 
     sshagent(['myapp-server-ssh-key']) {
-        ssh "scp -o StrictHostKeyChecking=no docker-compose.yaml $ec2Instance:/home/ec2-user"
-        ssh "scp -o StrictHostKeyChecking=no server-commands.sh $ec2Instance:/home/ec2-user"
-        ssh "ssh -o StrictHostKeyChecking=no $ec2Instance $shellCmd"
+        sh "scp -o StrictHostKeyChecking=no docker-compose.yaml $ec2Instance:/home/ec2-user"
+        sh "scp -o StrictHostKeyChecking=no server-commands.sh $ec2Instance:/home/ec2-user"
+        sh "ssh -o StrictHostKeyChecking=no $ec2Instance $shellCmd"
     }
 }
 
