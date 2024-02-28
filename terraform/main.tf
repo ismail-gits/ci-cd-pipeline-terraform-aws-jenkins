@@ -51,7 +51,7 @@ resource "aws_security_group" "myapp-sg" {
         from_port = 22
         to_port = 22
         protocol = "tcp"
-        cidr_blocks = [var.my_ip, var.jenkins_ip]
+        cidr_blocks = [var.my_ip]
     }
 
     ingress {
@@ -100,7 +100,7 @@ resource "aws_instance" "myapp-server" {
     instance_type = var.instance_type
 
     subnet_id = aws_subnet.myapp-subnet-1.id
-    vpc_security_group_ids = [aws_default_security_group.myapp-default-sg.id]
+    vpc_security_group_ids = [aws_security_group.myapp-sg.id]
     availability_zone = var.availability_zone
 
     associate_public_ip_address = true

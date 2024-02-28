@@ -18,5 +18,5 @@ variable image_name {
 variable instance_type {}
 variable env_prefix {}
 variable my_ip {}
-variable jenkins_ip {}
+# variable jenkins_ip {}
 variable private_key_name {}
