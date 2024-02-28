@@ -63,7 +63,7 @@ def deploy() {
     def shellCmd = "bash ./server-commands.sh $IMAGE_NAME:$IMAGE_VERSION $DOCKER_CREDS_USR $DOCKER_CREDS_PSW"
     def ec2Instance = "ec2-user@$SERVER_PUBLIC_IP"
 
-    sshagent['myapp-server-ssh-key'] {
+    sshagent(['myapp-server-ssh-key']) {
         ssh "scp -o StrictHostKeyChecking=no docker-compose.yaml $ec2Instance:/home/ec2-user"
         ssh "scp -o StrictHostKeyChecking=no server-commands.sh $ec2Instance:/home/ec2-user"
         ssh "ssh -o StrictHostKeyChecking=no $ec2Instance $shellCmd"
