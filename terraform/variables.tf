@@ -20,3 +20,4 @@ variable env_prefix {}
 variable my_ip {}
 # variable jenkins_ip {}
 variable private_key_name {}
+variable bucket_name {}
