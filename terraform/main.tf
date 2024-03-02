@@ -1,9 +1,9 @@
 terraform {
     required_version = ">= 0.12"
-    backend "s3" = {
-        bucket = var.bucket_name
+    backend "s3" {
+        bucket = "myapp-java-s3-bucket"
         key = "myapp/state.tfstate"
-        region = var.region
+        region = "ap-south-1"
     }
 }
 
